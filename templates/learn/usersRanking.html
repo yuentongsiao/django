@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户排行榜</title>
+</head>
+{% extends "learn/base.html" %}
+{%load static%}
+
+{% block title %} 用户排行榜 {% endblock %}
+{% block content %}
+<div class="container">
+	<div class="row">
+		<div class="col-sm-12">
+
+
+
+
+
+            {% for user in users %}
+<ul>
+           <li><a href="{% url 'learn:list' user.id%}">{{ user}}</a> </li>
+
+</ul>
+            {% endfor %}
+
+
+		</div>
+	</div>
+</div>
+ {% endblock %}
+<body>
+
+</body>
+</html>

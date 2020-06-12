@@ -1,0 +1,85 @@
+{# pwd_change.html 修改密码页面 #}
+{% extends "learn/base.html" %}
+{%load static%}
+{% block title %}修改密码{% endblock %}
+{% block content %}
+    <style type="text/css">
+	.panel
+	{
+		padding: 15px 15px 0px;
+		min-height: 414px;
+		cursor: default;
+	}
+	.text-center
+	{
+		margin: 0 auto;
+		text-align: center;
+		border-radius: 10px;
+		max-width: 500px;
+		-moz-box-shadow: 0px 0px 5px rgba(0,0,0,.3);
+		-webkit-box-shadow: 0px 0px 5px rgba(0,0,0,.3);
+		box-shadow: 0px 0px 5px rgba(0,0,0,.1);
+	}
+	.float-left
+	{
+		float: left !important;
+	}
+	.float-right
+	{
+		float: right !important;
+	}
+	img
+	{
+		border: 0;
+		vertical-align: bottom;
+	}
+	h2
+	{
+		padding-top: 15px;
+		font-size: 28px;
+        font-weight: bold;
+        color: rgba(0,0,0,.3);
+        padding-bottom:13px;
+	}
+	.padding-big
+	{
+		padding: 10px;
+	}
+	.alert
+	{
+		border-radius: 5px;
+		padding: 15px;
+		border: solid 1px #ddd;
+		background-color: #f5f5f5;
+	}
+</style>
+
+<section class="container">
+<div class="panel">
+<div class="text-center">
+    <h2><stong>修改密码 | Change password</stong></h2>
+    <form method="post" action="" enctype="multipart/form-data">
+		{% csrf_token %}
+		{% for field in form %}
+		<div style="width: 190px;margin: 0 auto;text-align: center;clear: both">
+            <div style="float: left">{{ field.label_tag }}</div>
+            <div style="float: left">{{ field }}</div>
+            {{ field.errors }}
+			{% if field.help_text %}
+                <small>{{ field.help_text|safe }}</small>
+			{% endif %}
+		</div>
+		{% endfor %}
+        <small>{% if message %}{{ message }}{% endif %}</small>
+		<div class="button-wrapper submit" style="clear: both">
+            <div class="padding-big"><button type="submit" class="btn btn-primary">完成</button></div>
+		</div>
+        <div class="padding-big"><a href="{% url 'learn:home' %}" title=" <-- 返 回 首 页 " > <-- 返 回 首 页 </a></div>
+	</form>
+</div>
+</div>
+</section>
+{% endblock %}
+
+
+
