@@ -1,0 +1,70 @@
+<!-- top.html 页面顶部导航栏 -->
+{% load static %}
+<header class="header">
+	<nav class="navbar navbar-default" id="navbar">
+		<div class="container">
+			<div class="header-topbar hidden-xs link-border">
+				勤记录 懂分享
+				{% if not user.is_authenticated %}
+				<ul class="site-nav topmenu">
+					<li><a href="{% url 'learn:sign' %}">登录</a></li>
+					<li><a href="{% url 'learn:join' %}" rel="nofollow">注册</a></li>
+				</ul>
+				{% elif user.is_authenticated %}
+				<div class="dropdown" style="float: right;">
+					<button type="button" class="btn btn-link dropdown-toggle text-dark" data-toggle="dropdown">{{user.username}}</button>
+					<div class="dropdown-menu">
+						<li><a class="dropdown-item text-dark" href="{% url 'learn:personData' %}"><small>个人主页</small></a></li>
+						<li><a class="dropdown-item text-dark" href="{% url 'learn:myNote' %}"><small>我的笔记</small></a></li>
+						<li><a class="dropdown-item text-dark" href="{% url 'learn:collect' %}"><small>我的收藏</small></a></li>
+						<li><a class="dropdown-item text-dark" href="{% url 'learn:pwd_change' %}"><small>修改密码</small></a></li>
+						<li><a class="dropdown-item text-dark" href="{% url 'learn:out' %}"><small>退出登陆</small></a></li>
+					</div>
+				</div>
+				{% endif %}
+			</div>
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#header-navbar"
+				 aria-expanded="false">
+					<span class="sr-only"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<h1 class="logo hvr-bounce-in"><a href="{% url 'learn:home' %}" title="知识仓库"><img src="{% static 'img/201610171329086541.png' %}"
+						 alt="知识仓库"></a></h1>
+			</div>
+			<div class="collapse navbar-collapse" id="header-navbar">
+				<form class="navbar-form visible-xs" action="{% url 'learn:searchInfo' %}" method="post">
+					{% csrf_token %}
+					<div class="input-group">
+						<select data-select-like-alignement="auto" class="drop-select" name="dropdown">
+							<option id="id" value="title"> 标题</option>
+							<option id="name" value="tag" selected="selected"> 标签</option>
+							<option id="stautus" value="class"> 类别</option>
+						</select>
+						<input type="text" name="keyword" class="form-control" placeholder="请输入关键字" maxlength="20" autocomplete="off">
+						<span class="input-group-btn">
+							<button class="btn btn-default btn-search" name="search" type="submit">搜索</button>
+						</span> </div>
+				</form>
+				<ul class="nav navbar-nav navbar-right">
+					<li><a data-cont="知识仓库" title="知识仓库" href="{% url 'learn:home' %}">首页</a></li>
+					<li><a data-cont="添加笔记" title="添加笔记" href="{% url 'learn:addInfo'%}">添加笔记</a></li>
+					{% if not user.is_authenticated %}
+					<li><a data-cont="笔记列表" title="笔记列表" href="{% url 'learn:404' %}">笔记列表</a></li>
+					{% elif user.is_authenticated %}
+					<li><a data-cont="笔记列表" title="笔记列表" href="{% url 'learn:list' user.id %}">笔记列表</a></li>
+					{% endif %}
+					{# <li><a data-cont="详细页" title="详细页" href="show.html">详细页</a></li>#}
+
+
+					{# <li><a data-cont="用户排行榜" title="用户排行榜" href="{% url 'learn:usersRanking' %}">用户排行榜</a></li>#}
+					<li><a data-cont="赞数排行榜" title="赞数排行榜" href="{% url 'learn:bigThumb' %}">笔记赞数</a></li>
+					{# <li><a data-cont="我的收藏" title="我的收藏" href="#">我的收藏</a></li>#}
+
+				</ul>
+			</div>
+		</div>
+	</nav>
+</header>

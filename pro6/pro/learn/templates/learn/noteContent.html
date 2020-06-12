@@ -1,0 +1,281 @@
+{# noteContent.html 笔记内容 #}
+{% extends "learn/base.html" %}
+{%load static%}
+{% block title %} {{ note.title }}-{{ note.user_id.username }} {% endblock %}
+{% block content %}
+
+    <style>
+    #ccc{
+        padding: 0 20px;
+        background-color: #fff;
+        border: 1px solid #EAEAEA;
+        border-radius: 4px;
+    }
+    #comment-textarea1 {
+        width: 100%;
+        resize: none;
+        overflow-x: hidden;
+        overflow-y: auto;
+        border: none;
+        line-height: 22px;
+        font-size: 14px;
+        outline: 0;
+        color: #666;
+    }
+
+    </style>
+
+<section class="container">
+	<div class="content-wrap">
+		<form action="{% url 'learn:delNote' %}" method="get">
+            <div class="content" id="ccc">
+                <header class="article-header">
+                    <h1 class="article-title">
+                        <a class="disabled" title="{{ note.title }}">{{ note.title }}</a>
+                    </h1>
+                    <div class="article-meta">
+                        <span class="item article-meta-time">
+                            <time class="time" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="发表时间：{{ note.uptime|date:'Y-m-d' }}">
+                                <i class="glyphicon glyphicon-time"></i>
+                                {{ note.uptime|date:'Y-m-d' }}
+                            </time>
+                        </span>
+                        <span class="item article-meta-source" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="来源：知识仓库">
+                            <i class="glyphicon glyphicon-globe"></i> 知识仓库
+                        </span>
+                        <span class="item article-meta-category" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="{{ note.classes.class_name }}">
+                            <i class="glyphicon glyphicon-list"></i>
+                            <a href="{% url 'learn:classficationInfo' user.id note.classes_id %}" title="{{ note.classes.class_name }}">{{ note.classes.class_name }}</a>
+                        </span>
+                        <span class="item article-meta-category" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="作者：{{ note.user_id.username }}">
+                            <i class="glyphicon glyphicon-user"></i>
+                            <a class="disabled" title="作者：{{ note.user_id.username }}">作者：{{ note.user_id.username }}</a>
+                        </span>
+                        <span id="thumb" class="item article-meta-views" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="获赞数：{{ note.like }}">
+                            <i class="glyphicon glyphicon-thumbs-up"></i>
+                            {{ note.like }}
+                        </span>
+                    </div>
+                </header>
+                <article class="article-content">
+                    <p><img data-original="{% static 'img/201610181557196870.png' %}" src="{% static 'img/201610181557196870.png' %}" alt="" /></p>
+                    <div>
+                        <textarea readonly id="comment-textarea1" cols="100%" rows="20%" tabindex="5">{{ note.content }}</textarea>
+                    </div>
+                    <div>
+                        {% if result %}
+                            <i class="glyphicon glyphicon-edit"></i>
+                            <input type="text" id="id" name="id" value="{{ note.id }}" hidden />
+                            <button type="submit" formaction="{% url 'learn:editNote' %}" class="btn-link" style="padding-left: 3px">编辑</button>
+                            <i class="glyphicon glyphicon-erase" style="padding-left: 5px"></i>
+                            <button type="submit" class="btn-link" style="padding-left: 3px">删除</button>
+                        {% else %}
+                            <span id="goodSpan" onclick="sendGood({{ note.id }},{{ request.user.id }})">
+                                <i class="glyphicon glyphicon-thumbs-up"></i>
+                                <span id="good">{{ note.like }}</span>
+                            </span>
+                            <a type="text" class="btn-link disabled" onclick="collect({{ note.id }},{{ request.user.id }})">
+                                <i class="glyphicon glyphicon-heart-empty"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+
+                    <div class="bdsharebuttonbox" style="padding-top: 7px">
+                        <a href="#" class="bds_more" data-cmd="more"></a>
+                        <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+                        <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+                        <a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a>
+                        <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+                        <a href="#" class="bds_tieba" data-cmd="tieba" title="分享到百度贴吧"></a>
+                        <a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+                    </div>
+
+                    <script>
+                        window._bd_share_config = {"common": { "bdSnsKey": {}, "bdText": "", "bdMini": "2", "bdMiniList": false, "bdPic": "", "bdStyle": "1", "bdSize": "32" }, "share": {} };with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'http://bdimg.share.baidu.com/static/api/js/share.js?v=0.js?cdnversion=' + ~(-new Date() / 36e5)];
+                    </script>
+
+                </article>
+                <div class="article-tags">
+                    标签：<a class="disabled" rel="tag">{{ note.tag.tag_name }}</a>
+                </div>
+
+                <div class="title" >
+                    <h3>评论</h3>
+                </div>
+                <div id="respond">
+                    <div class="comment">
+                        <div class="comment-box">
+                            <textarea  placeholder="想对作者说点什么" name="comment-textarea" id="comment-textarea" cols="100%" rows="3" tabindex="3"></textarea>
+                            <div class="comment-ctrl">
+                                <div class="comment-prompt" style="display: none;"> <i class="fa fa-spin fa-circle-o-notch"></i> <span class="comment-prompt-text">评论正在提交中...请稍后</span>
+                                </div>
+                                <div class="comment-success" style="display: none;"> <i class="fa fa-check"></i> <span class="comment-prompt-text">评论提交成功...</span>
+                                </div>
+                                <button type="button" name="comment-submit" id="comment-submit" tabindex="4" onclick="comment({{ note.id }},{{ request.user.id }})">评论</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="postcomments"> {#  id="say"#}
+                    <ol id="comment_list" class="commentlist">
+                        {% for item in comm %}
+                        <li class="comment-content"><span class="comment-f">#{{ item.id }}</span>
+                            <div class="comment-main">
+                                <p><a class="address" href="#" rel="nofollow" target="_blank">{{ item.user_id.username }}</a>
+                                    <span class="time">{{ item.time|date:'Y-m-d' }}</span>
+                                    <br>{{ item.content }}
+                                </p>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ol>
+                </div>
+            </div>
+		</form>
+	</div>
+    <aside class="sidebar">
+		<div class="fixed">
+			<div class="widget widget-tabs">
+				<ul class="nav nav-tabs" role="tablist">
+					<li role="presentation" class="active"><a href="#notice" aria-controls="notice" role="tab" data-toggle="tab">统计信息</a></li>
+					<li role="presentation"><a href="#contact" aria-controls="contact" role="tab" data-toggle="tab">联系站长</a></li>
+				</ul>
+				<div class="tab-content">
+					<div role="tabpanel" class="tab-pane contact active" id="notice">
+						<h2>笔记总数:{{ count }}篇</h2>
+						<h2>网站开发:<span id="sitetime">121天 </span></h2>
+					</div>
+					<div role="tabpanel" class="tab-pane contact" id="contact">
+						<h2>QQ:1024197394
+							<a href="" target="_blank" rel="nofollow" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="QQ:"></a>
+						</h2>
+						<h2>Email:1024197394@qq.com
+							<a href="#" target="_blank" data-toggle="tooltip" rel="nofollow" data-placement="bottom" title="" data-original-title="#"></a></h2>
+					</div>
+				</div>
+			</div>
+			<div class="widget widget_search">
+				<form class="navbar-form" action="{% url 'learn:searchInfo' %}" method="post">
+                    {% csrf_token %}
+                    <select data-select-like-alignement="auto" class="btn btn-link dropdown-toggle text-dark" name="dropdown">
+                        <option class="dropdown-item text-dark" id="id" value="title"> 标题</option>
+                        <option class="dropdown-item text-dark" id="name" value="tag" selected="selected"> 标签</option>
+                        <option class="dropdown-item text-dark" id="stautus" value="class"> 类别</option>
+                    </select>
+                    <div class="input-group">
+						<input type="text" name="keyword" class="form-control" size="35" placeholder="请输入关键字" maxlength="15" autocomplete="off">
+						<span class="input-group-btn">
+							<button class="btn btn-default btn-search" name="search" type="submit">搜索</button>
+						</span>
+                    </div>
+				</form>
+			</div>
+		</div>
+		<div class="widget widget_hot">
+			<h3>最新评论文章</h3>
+			<ul>
+                {% for item in comment %}
+				<li><a title="{{ item.note_id.title }}" href="{% url 'learn:noteContent' user.id item.note_id.id %}">
+                    <span class="thumbnail">
+                        <img class="thumb" data-original="images/201610181739277776.jpg" src="{% static 'img/201610181739277776.png' %}" alt="{{ item.note_id.title }}" style="display: block;">
+                    </span>
+                    <span class="text">{{ item.note_id.title }}</span>
+                    <span class="muted"><i class="glyphicon glyphicon-time"></i>{{ item.note_id.uptime|date:'Y-m-d' }}</span>
+                    <span class="muted"><i class="glyphicon glyphicon-star-empty"></i>{{ item.note_id.like }}</span>
+                    <p class="note">{{ item.user_id.username }}评论了：{{ item.content }}</p></a>
+                </li>
+                {% endfor %}
+			</ul>
+		</div>
+		<div class="widget widget_sentence">
+			<a href="#" target="_blank" rel="nofollow" title="知识仓库：轻松学习笔记">
+				<img style="width: 100%" src="{% static 'img/201610241224221511.png' %}" alt="知识仓库：轻松学习笔记"></a>
+		</div>
+		<div class="widget widget_sentence">
+			<a href="#" target="_blank" rel="nofollow" title="知识仓库：轻松学习笔记">
+				<img style="width: 100%" src="{% static 'img/ad.png' %}" alt="知识仓库：轻松学习笔记"></a>
+		</div>
+		<div class="widget widget_sentence">
+			<h3>关于我们</h3>
+			<div class="widget-sentence-link">
+                <h4 style="padding-top: 5px;padding-bottom: 5px">新疆农业大学计算机与信息工程学院</h4>
+			</div>
+		</div>
+	</aside>
+</section>
+
+
+
+
+
+
+    <script>
+        /*收藏：*/
+        function collect(a,b){
+            $.ajax(
+                {
+                    url: '{%url 'learn:collect' %}',
+                    type:"POST",
+                    data:{csrfmiddlewaretoken:'{{ csrf_token }}',id:a,user:b},
+                    success : function(done) {//返回数据根据结果进行相应的处理
+                        alert(done);
+                  }
+               })
+            }
+</script>
+
+
+
+    <script>
+        /*点赞的数量：*/
+        function sendGood(a,b){
+            var good = document.getElementById("good").textContent;
+            {#var bad = document.getElementById("bad").textContent;#}
+            good = parseInt(good) ;
+            $.ajax({
+                url: '{%url 'learn:like' %}',
+                type:"POST",
+                data:{'like':good,csrfmiddlewaretoken:'{{ csrf_token }}',id:a,user:b},
+                success : function(result,done) {//返回数据根据结果进行相应的处理
+                    document.getElementById("good").innerText = result;
+                    document.getElementById("thumb").innerText = "赞数："+result
+                }
+            })
+        }
+</script>
+
+
+<!-- Modal comment -->
+<div class="modal fade" id="success" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel">发表评论成功</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body"><p>您已成功发表评论</p></div>
+            <div class="modal-footer">
+                <a href="{% url 'learn:noteContent' user.id note.id %}" class="btn btn-dark">确定</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script>
+        /*评论：*/
+        function comment(a,b){
+            var content = document.getElementById("comment-textarea").value;
+            var original = document.getElementById("postcomments").innerText;
+            $.ajax({
+                url: '{%url 'learn:comment' %}',
+                type:"POST",
+                data:{content:content,csrfmiddlewaretoken:'{{ csrf_token }}',id:a,user:b},
+                success : function(result) {//返回数据根据结果进行相应的处理
+                    {#document.getElementById("postcomments").innerText =original+ "你评论："+content#}
+                    $('#success').modal('show')
+                }
+            })
+        }
+    </script>
+
+{% endblock %}

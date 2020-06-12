@@ -1,0 +1,23 @@
+{% extends "learn/manageUsers.html" %}
+
+{%load static%}
+{% block title %} 管理员 {% endblock %}
+{% block content %}
+
+
+<ul>
+        用户<br>
+  <form  method="POST">
+    {% csrf_token %}
+    {% for item in user %}
+        {% if item.is_superuser == 0 %}
+
+         <li >{{ item.username }} <button class="btn btn-outline-primary btn-sm" type="submit" formaction="{% url 'learn:deleteuser1' item.id %}" /> -- </li>
+             {% endif %}
+    {% endfor%}
+  </form>
+
+</ul>
+
+
+{% endblock %}
